@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var letter = '';
+
 if (process.argv[3].match(/:\//g)) letter = process.argv[3].slice(0, 3);
 var dir = path.dirname(process.argv[3]);
 fs.readdir(dir, function (err) {
