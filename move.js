@@ -1,20 +1,25 @@
 var fs = require('fs');
 var path = require('path');
-var letter = '';
-
-if (process.argv[3].match(/:\//g)) letter = process.argv[3].slice(0, 3);
 var dir = path.dirname(process.argv[3]);
+var letter = (path.isAbsolute(process.argv[3])) ? process.argv[3].slice(0, 2) + '/' : '';
+var dirArray = (path.isAbsolute(process.argv[3])) ? dir.split('\\').slice(1, this.length) : dir.split('/');
 fs.readdir(dir, function (err) {
-	if (err && (dir.split('/').length === 1)) fs.mkdir(dir, 733, function (err) {
+	if (err && (dirArray.length === 1)) fs.mkdir(dir, 733, function (err) {
 		if (err) console.error("Error when creating folder: ", err);
 	});
 	else if (err) {
-		var count = 0;
-		while (count < dir.split('/').length) {
+		var count = 0, flag;
+		while (count < dirArray.length) {
 			count++;
-			fs.mkdir(dir.split('/').slice(0, count).join('/'), 733, function (err) {
-				// Need a workaround to pass along other parameters, like a flag or count variable
-				if (err) console.warn("Some directories already exist, proceeding...");
+			flag = 0;
+			try {
+				fs.readdirSync(letter + dirArray.slice(0, count).join('/'));
+			}
+			catch (err) {
+				flag = 1;
+			}
+			if (flag) fs.mkdir(letter + dirArray.slice(0, count).join('/'), 733, function (err) {
+				if (err) console.error("An error has occured: ", err);
 			});
 		}
 	}
